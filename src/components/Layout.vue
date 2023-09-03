@@ -15,12 +15,14 @@
   </el-dropdown>
         </el-header>
         <el-main>
-            main
+            <HomePage/>
         </el-main>
     </el-container>
 </template>
-<script>
-export default{
 
+<script>
+import HomePage from './home/HomePage.vue';
+export default{
+    components: { HomePage }
 }
 </script>
