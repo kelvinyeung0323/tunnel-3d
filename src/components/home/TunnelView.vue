@@ -80,15 +80,10 @@ function getComponentName(type) {
 }
 //=========弹窗 end ========================
 //摄像头原始位置
-// const cameraOriginPos = {
-//     x: 0,
-//     y: 70,
-//     z: 60,
-// }
 const cameraOriginPos = {
-    x: 74,
-    y: 3,
-    z: 1,
+    x: 0,
+    y: 70,
+    z: 60,
 }
 //摄像头视点
 const viewPoint = ref(3);
@@ -170,9 +165,9 @@ function initScene() {
     const thDirectLight1 = new THREE.DirectionalLight(0xffffff, 1);
     thDirectLight1.position.set(70.4, 3, -6);
     thDirectLight1.target.position.set(67, 2, -6);
-    directLightHelper = new THREE.DirectionalLightHelper(thDirectLight1, 5, 0x00ff00)
+    // directLightHelper = new THREE.DirectionalLightHelper(thDirectLight1, 5, 0x00ff00)
     scene.add(thDirectLight1);
-    scene.add(directLightHelper);
+    // scene.add(directLightHelper);
 
 
 
@@ -338,7 +333,7 @@ function animate() {
         animaitonMixer.update(0.02);
     }
     // spotLightHelper.update();
-    directLightHelper.update();
+    // directLightHelper.update();
 }
 
 

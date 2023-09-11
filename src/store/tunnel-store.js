@@ -80,7 +80,7 @@ export const useTunnelStore = defineStore("tunnel-store", () => {
       connStatus: "online",
       data: 13,
     },
-    hz_ruler_01: {
+    hz_ruler_02: {
       deviceName: "电子水尺-海珠02",
       type: "ruler",
       connStatus: "online",
