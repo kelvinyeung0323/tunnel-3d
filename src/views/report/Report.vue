@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-row>
-            <div ref="chartRef"></div>
+            <div class="chart" ref="chartRef"></div>
         </el-row>
         <el-row>
             <el-table>
@@ -14,9 +14,9 @@
 </template>
 
 <script name="report" setup>
-import * as charts from 'echarts'
+import * as echarts from 'echarts'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import { ref } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 
 let lineChart;
 const chartRef = ref(null);
@@ -97,3 +97,9 @@ onMounted(() => {
 
 })
 </script>
+<style lang="less" scoped>
+.chart {
+    width: 100%;
+    height: 50vh;
+}
+</style>

@@ -145,10 +145,12 @@ watch(router.currentRoute,
 )
 
 const toDeviceList = () => {
+    drawer.title = "设备列表"
     proxy.$router.replace('/device')
 
 }
 const handleOpenReport = () => {
+    drawer.title = "数据报表"
     proxy.$router.replace('/report')
 
 }
@@ -238,13 +240,13 @@ const handleOpenCctvMgt = () => {
 
         .cctv-left {
             position: absolute;
-            top: 80px;
+            top: 60px;
             left: 20px;
         }
 
         .cctv-right {
             position: absolute;
-            top: 80px;
+            top: 60px;
             right: 20px;
         }
     }

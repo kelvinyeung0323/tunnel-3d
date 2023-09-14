@@ -11,7 +11,7 @@ const option = reactive({
   suuid: "1",
   isPlay: false,
   deviceId: "1",
-  deviceName: "名称",
+  deviceName: "摄像头",
 })
 
 </script>

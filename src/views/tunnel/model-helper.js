@@ -4,41 +4,7 @@ import {
   CSS2DObject,
 } from "three/addons/renderers/CSS2DRenderer.js";
 
-const Constrants = {
-  HZ_FENCE_01: "hz_fence_01",
-  HZ_FENCE_02: "hz_fence_02",
-  HZ_FENCE_03: "hz_fence_03",
-  HZ_INDICATOR_01: "hz_indicator_01",
-  HZ_INDICATOR_02: "hz_indicator_02",
-  HZ_INDICATOR_03: "hz_indicator_03",
-  HZ_ALARM: "hz_alarm",
-  HZ_CCTV_01: "hz_cctv_01",
-  HZ_CCTV_02: "hz_cctv_02",
-  HZ_TRAFFIC_01: "hz_traffic_01",
-  HZ_TRAFFIC_02: "hz_traffic_02",
-  HZ_RULER_01: "hz_ruler_01",
-  HZ_RULER_02: "hz_ruler_02",
-  HZ_TILT: "hz_tilt",
-  //天河方向
-  TH_FENCE_01: "th_fence_01",
-  TH_FENCE_02: "th_fence_02",
-  TH_FENCE_03: "th_fence_03",
-  TH_FENCE_04: "th_fence_04",
-  TH_INDICATOR_01: "th_indicator_01",
-  TH_INDICATOR_02: "th_indicator_02",
-  TH_INDICATOR_03: "th_indicator_03",
-  TH_INDICATOR_04: "th_indicator_04",
-  TH_ALARM_01: "th_alarm_01",
-  TH_ALARM_02: "th_alarm_02",
-  TH_CCTV_01: "th_cctv_01",
-  TH_CCTV_02: "th_cctv_02",
-  TH_CCTV_03: "th_cctv_03",
-  TH_TRAFFIC_01: "th_traffic_01",
-  TH_TRAFFIC_02: "th_traffic_02",
-  TH_RULER_01: "th_ruler_01",
-  TH_RULER_02: "th_ruler_02",
-  TH_TILT: "th_tilt",
-};
+import { modelConfigs } from "./model-configs";
 
 //材质设置
 function initModelMaterials(mesh) {
@@ -120,349 +86,6 @@ function initModelMaterials(mesh) {
 }
 
 class ModelHelper {
-  modelConfigs = {
-    hz_fence_01: {
-      type: "fence",
-      pos: { x: 0, y: 0, z: 0 },
-      main: "hz_fence_01_main",
-      viewPoint: { x: -72, y: 4, z: 2 },
-      dialog: {
-        pos: { x: 0, y: 2, z: 0 },
-        cssObj: null,
-      },
-    },
-    hz_fence_02: {
-      type: "fence",
-      pos: { x: 0, y: 0, z: 0 },
-      main: "hz_fence_02_main",
-      viewPoint: { x: -72, y: 4, z: 2 },
-      dialog: {
-        pos: { x: 0, y: 2, z: 0 },
-        cssObj: null,
-      },
-    },
-    hz_fence_03: {
-      type: "fence",
-      pos: { x: 0, y: 0, z: 0 },
-      main: "hz_fence_03_main",
-      viewPoint: { x: -72, y: 4, z: 2 },
-      dialog: {
-        pos: { x: 0, y: 2, z: 0 },
-        cssObj: null,
-      },
-    },
-    hz_indicator_01: {
-      type: "indicator",
-      pos: { x: 0, y: 0, z: 0 },
-      main: "hz_indicator_01_box",
-      viewPoint: { x: -75, y: 8, z: 2 },
-      dialog: {
-        pos: { x: 0, y: 1.2, z: 0 },
-        cssObj: null,
-      },
-    },
-    hz_indicator_02: {
-      type: "indicator",
-      pos: { x: 0, y: 0, z: 0 },
-      main: "hz_indicator_02_box",
-      viewPoint: { x: -75, y: 8, z: 2 },
-      dialog: {
-        pos: { x: 0, y: 1.2, z: 0 },
-        cssObj: null,
-      },
-    },
-    hz_indicator_03: {
-      type: "indicator",
-      pos: { x: 0, y: 0, z: 0 },
-      main: "hz_indicator_03_box",
-      viewPoint: { x: -75, y: 8, z: 2 },
-      dialog: {
-        pos: { x: 0, y: 1.2, z: 0 },
-        cssObj: null,
-      },
-    },
-    hz_alarm: {
-      type: "alarm",
-      pos: null,
-      main: "hz_alarm_box",
-      viewPoint: {
-        x: -81,
-        y: 6,
-        z: 1,
-      },
-      dialog: {
-        pos: { x: 0.8, y: 0.3, z: 0 },
-        cssObj: null,
-      },
-    },
-    hz_cctv_01: {
-      type: "cctv",
-      pos: null,
-      main: "hz_cctv_01_body",
-      viewPoint: { x: -72, y: 6, z: 5 },
-      dialog: {
-        pos: { x: 0, y: 0, z: 0 },
-        cssObj: null,
-      },
-    },
-    hz_cctv_02: {
-      type: "cctv",
-      pos: null,
-      main: "hz_cctv_02_body",
-      viewPoint: { x: -27, y: -5, z: 2 },
-      dialog: {
-        pos: { x: 0, y: 0, z: 0 },
-        cssObj: null,
-      },
-    },
-    hz_traffic_01: {
-      type: "traffic-light",
-      pos: { x: 0, y: 0, z: 0 },
-      main: "hz_traffic_01_box",
-      viewPoint: { x: -83.368025, y: 6.544511, z: 2.9524699999999995 },
-      dialog: {
-        pos: { x: 0, y: 0.4, z: -1 },
-        cssObj: null,
-      },
-    },
-    hz_traffic_02: {
-      type: "traffic-light",
-      pos: { x: 0, y: 0, z: 0 },
-      main: "hz_traffic_02_box",
-      viewPoint: { x: -83.368025, y: 6.544511, z: 2.9524699999999995 },
-      dialog: {
-        pos: { x: 0, y: 0.4, z: -1 },
-        cssObj: null,
-      },
-    },
-    hz_ruler_01: {
-      type: "ruler",
-      pos: {
-        x: -24,
-        y: -7,
-        z: -1,
-      },
-      main: "hz_ruler_01_1",
-      viewPoint: { x: -27, y: -5, z: 2 },
-      dialog: {
-        pos: { x: 0, y: 0, z: 0 },
-        cssObj: null,
-      },
-    },
-    hz_ruler_02: {
-      type: "ruler",
-      pos: {
-        x: -25.5,
-        y: -7,
-        z: 4,
-      },
-      main: "hz_ruler_02_1",
-      viewPoint: { x: -27, y: -7, z: 3 },
-      dialog: {
-        pos: { x: 0, y: 0, z: 0 },
-        cssObj: null,
-      },
-    },
-    hz_tilt: {
-      type: "tilt",
-      pos: {
-        x: -24,
-        y: -7,
-        z: -1,
-      },
-      main: "hz_tilt_main_1",
-      viewPoint: { x: -24.5, y: -6.2, z: -0.1 },
-      dialog: {
-        pos: { x: 0, y: 0, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_fence_01: {
-      type: "fence",
-      pos: { x: 0, y: 0, z: -5 },
-      main: "th_fence_01_main",
-      viewPoint: { x: 61, y: 0, z: -4 },
-      dialog: {
-        pos: { x: 0, y: 1, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_fence_02: {
-      type: "fence",
-      pos: { x: 0, y: 0, z: -5 },
-      main: "th_fence_02_main",
-      viewPoint: { x: 61, y: 0, z: -4 },
-      dialog: {
-        pos: { x: 0, y: 1, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_fence_03: {
-      type: "fence",
-      pos: { x: 0, y: -5, z: -10 },
-      main: "th_fence_03_main",
-      viewPoint: { x: 47, y: -4, z: -9 },
-      dialog: {
-        pos: { x: 0, y: 1, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_fence_04: {
-      type: "fence",
-      pos: { x: 0, y: -5, z: -10 },
-      main: "th_fence_04_main",
-      viewPoint: { x: 47, y: -4, z: -9 },
-      dialog: {
-        pos: { x: 0, y: 1, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_indicator_01: {
-      type: "indicator",
-      pos: { x: 0, y: -3, z: 0 },
-      main: "th_indicator_01_box",
-      viewPoint: {
-        x: 64,
-        y: 4,
-        z: -4,
-      },
-      dialog: {
-        pos: { x: 0, y: 0.6, z: -0.4 },
-        cssObj: null,
-      },
-    },
-    th_indicator_02: {
-      type: "indicator",
-      pos: { x: 0, y: -3, z: 0 },
-      main: "th_indicator_02_box",
-      viewPoint: { x: 64, y: 4, z: -4 },
-      dialog: {
-        pos: { x: 0, y: 0.4, z: 1 },
-        cssObj: null,
-      },
-    },
-    th_indicator_03: {
-      type: "indicator",
-      pos: { x: 0, y: 0, z: -10 },
-      main: "th_indicator_03_box",
-      viewPoint: { x: 50, y: -1, z: -10 },
-      dialog: {
-        pos: { x: 0, y: 0, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_indicator_04: {
-      type: "indicator",
-      pos: { x: 0, y: 0, z: -10 },
-      main: "th_indicator_04_box",
-      viewPoint: { x: 50, y: -1, z: -10 },
-      dialog: {
-        pos: { x: 0, y: 0, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_alarm_01: {
-      type: "alarm",
-      pos: { x: 0, y: -3, z: 0 },
-      main: "th_alarm_01_box",
-      viewPoint: { x: 64, y: 4, z: -4 },
-      dialog: {
-        pos: { x: 0, y: 0, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_alarm_02: {
-      type: "alarm",
-      pos: { x: 0, y: 3.5, z: -10 },
-      main: "th_alarm_02_box",
-      viewPoint: { x: 61, y: 3.5, z: -9 },
-      dialog: {
-        pos: { x: 0, y: 0, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_cctv_01: {
-      type: "cctv",
-      pos: { x: 0, y: -3, z: 0 },
-      main: "th_cctv_01_body",
-      viewPoint: { x: 64, y: 4, z: -4 },
-      dialog: {
-        pos: { x: 0.8, y: 0.3, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_cctv_02: {
-      type: "cctv",
-      pos: { x: 0, y: 0, z: -10 },
-      main: "th_cctv_02_body",
-      viewPoint: { x: 50, y: -1, z: -10 },
-      dialog: {
-        pos: { x: 0, y: 0, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_cctv_03: {
-      type: "cctv",
-      pos: { x: 0, y: 0, z: 0 },
-      main: "th_cctv_03_body",
-      viewPoint: { x: 25, y: -6, z: -3 },
-      dialog: {
-        pos: { x: 0, y: 0, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_traffic_01: {
-      type: "traffic-light",
-      pos: { x: 0, y: 3.5, z: -10 },
-      main: "th_traffic_01_box",
-      viewPoint: { x: 61, y: 3.5, z: -9 },
-      dialog: {
-        pos: { x: 0, y: 1, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_traffic_02: {
-      type: "traffic-light",
-      pos: { x: 0, y: 3.5, z: -10 },
-      main: "th_traffic_02_box",
-      viewPoint: { x: 61, y: 3.5, z: -9 },
-      dialog: {
-        pos: { x: 0, y: 1, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_ruler_01: {
-      type: "ruler",
-      pos: { x: 19, y: -11, z: -20 },
-      main: "th_ruler_01_1",
-      viewPoint: { x: 21, y: -7, z: -7 },
-      dialog: {
-        pos: { x: 0, y: 0, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_ruler_02: {
-      type: "ruler",
-      pos: { x: 19, y: -11, z: 5 },
-      main: "th_ruler_02_1",
-      viewPoint: { x: 20, y: -7, z: -2 },
-      dialog: {
-        pos: { x: 0, y: 0, z: 0 },
-        cssObj: null,
-      },
-    },
-    th_tilt: {
-      type: "tilt",
-      pos: { x: 19, y: -11, z: 5 },
-      main: "th_tilt_main_1",
-      viewPoint: { x: 20, y: -7, z: -2 },
-      dialog: {
-        pos: { x: 0, y: 0, z: 0 },
-        cssObj: null,
-      },
-    },
-  };
-
   //所有设备物体的数组
   deviceObjects = [];
   //一个影射表，key为模型名称,value为组件模型各组件（物体）的列表
@@ -483,15 +106,15 @@ class ModelHelper {
 
   loadAnimations(gltf) {
     gltf.animations?.forEach((clip) => {
-      for (let key in this.modelConfigs) {
+      for (let key in modelConfigs) {
         if (clip.name.startsWith(key)) {
           const action = this.animationMixer.clipAction(clip);
           // action.loop = THREE.LoopOnce;
           // 停在最后一帧
           action.clampWhenFinished = true;
           // action.play();
-          this.modelConfigs[key].animationClip = clip;
-          this.modelConfigs[key].animationAction = action;
+          modelConfigs[key].animationClip = clip;
+          modelConfigs[key].animationAction = action;
         }
       }
     });
@@ -504,7 +127,7 @@ class ModelHelper {
       // console.log("arr", arr);
       arr.forEach((el) => {
         this.objMap[el.name] = arr;
-        this.modelConfigMap[el.name] = this.modelConfigs[key];
+        this.modelConfigMap[el.name] = modelConfigs[key];
         this.deviceObjectMap[el.name] = el;
       });
     }
@@ -513,8 +136,8 @@ class ModelHelper {
   loadObject0(children) {
     children.forEach((element) => {
       let name = element.name;
-      for (let key in this.modelConfigs) {
-        let mConfig = this.modelConfigs[key];
+      for (let key in modelConfigs) {
+        let mConfig = modelConfigs[key];
         if (element.material != undefined && name.startsWith(key)) {
           this.deviceObjects.push(element);
           if (!this.deviceModels.hasOwnProperty(key)) {
@@ -553,7 +176,7 @@ class ModelHelper {
     // const el = ref.value.$el;
     const el = ref.$el;
     const modeleName = el.dataset.modelName;
-    const model = this.modelConfigs[modeleName];
+    const model = modelConfigs[modeleName];
     const dialog = model.dialog;
     const pos = dialog.pos;
     const objCss = new CSS2DObject(el);
@@ -644,7 +267,7 @@ class ModelHelper {
   //道闸开关
   switchFence(modelName, status) {
     console.log("switch fence.");
-    const fence = this.modelConfigs[modelName];
+    const fence = modelConfigs[modelName];
     const action = fence.animationAction;
     action.clampWhenFinished = true;
     // action.play();
@@ -658,6 +281,22 @@ class ModelHelper {
       action.timeScale = 1;
     }
     action.play();
+  }
+  switchDeviceStatus(deviceDataMap) {
+    console.log("switch status....");
+    //设置
+    for (let key in deviceDataMap) {
+      if (deviceDataMap.hasOwnProperty(key)) {
+        let model = deviceDataMap[key];
+        if (model.type == "fence") {
+          this.switchFence(key, model.status);
+        } else if (model.type == "indicator") {
+          this.switchIndicator(key, model.status);
+        } else if (model.type == "traffic-light") {
+          this.switchTrafficLight(key, model.status);
+        }
+      }
+    }
   }
 }
 export { ModelHelper };

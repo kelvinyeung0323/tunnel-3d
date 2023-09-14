@@ -28,7 +28,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import tunnelModel from '../../assets/models/tunnel.glb';
 import gsap from 'gsap';
 import elementResizeDetector from 'element-resize-detector';
-import { onMounted, reactive, ref } from 'vue';
+import { nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { ModelHelper } from './model-helper';
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import AlarmDialog from './dialog/AlarmDialog.vue'
@@ -179,7 +179,8 @@ function initScene() {
         //动画
         animaitonMixer = new THREE.AnimationMixer(gltf.scene);
         modelHelper.init(gltf, animaitonMixer);
-        // initLabel(scene, camera);
+        modelHelper.initDialogs(deviceDialogRefs.value);
+        modelHelper.switchDeviceStatus(deviceDataMap);
     }, undefined, function (error) {
         console.error("load model error:", error);
     });
@@ -211,8 +212,8 @@ function onMousePointerMove(event) {
 
 //鼠标点击事件
 function onMouseClick(event) {
-    let viewPoint = modelHelper.modelConfigs.hz_alarm.viewPoint;
-    let pos = modelHelper.modelConfigs.hz_alarm.pos;
+    let viewPoint;
+    let pos;
     if (INTERSECTED) {
         if (!modelHelper.modelConfigMap.hasOwnProperty(INTERSECTED.name)) {
             console.error("there's not a model config for", INTERSECTED.name);
@@ -298,15 +299,6 @@ function initOutlineEffectPass() {
     composer.addPass(effectFXAA)
 }
 
-
-//初始化对话框
-function initDialogs() {
-    setTimeout(() => {
-        modelHelper.initDialogs(deviceDialogRefs.value);
-    }, 1000);
-
-}
-
 //处理对话框命令
 function handleDialogCommand(cmd) {
     console.log("command:", cmd)
@@ -339,31 +331,38 @@ function animate() {
 
 
 onMounted(() => {
-    initScene();
-    initDialogs();
-    let width = modelContainer.value.clientWidth;
-    let height = modelContainer.value.clientHeight;
-    renderer.setSize(width, height);
-    labelRenderer.setSize(width, height);
-
-    modelContainer.value.insertBefore(labelRenderer.domElement, modelContainer.value.children[0]);
-    modelContainer.value.insertBefore(renderer.domElement, modelContainer.value.children[0]);
-    initOutlineEffectPass();
-    animate();
-    erd.listenTo(modelContainer.value, function () {
-        width = modelContainer.value.clientWidth;
-        height = modelContainer.value.clientHeight;
+    nextTick(() => {
+        initScene();
+        let width = modelContainer.value.clientWidth;
+        let height = modelContainer.value.clientHeight;
         renderer.setSize(width, height);
-        controller.update();
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-        composer.setSize(width, height);
+        labelRenderer.setSize(width, height);
+        modelContainer.value.insertBefore(labelRenderer.domElement, modelContainer.value.children[0]);
+        modelContainer.value.insertBefore(renderer.domElement, modelContainer.value.children[0]);
+        initOutlineEffectPass();
+        animate();
+        erd.listenTo(modelContainer.value, function () {
+            width = modelContainer.value.clientWidth;
+            height = modelContainer.value.clientHeight;
+            renderer.setSize(width, height);
+            controller.update();
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            composer.setSize(width, height);
+        })
+        //加载完再添加监听，不然获取不到元素的宽高
+        document.addEventListener('mousemove', onMousePointerMove);
+        document.addEventListener('click', onMouseClick);
+
     })
-    //加载完再添加监听，不然获取不到元素的宽高
-    document.addEventListener('mousemove', onMousePointerMove);
-    document.addEventListener('click', onMouseClick);
 
 })
+
+
+watch(deviceDataMap, () => {
+    modelHelper.switchDeviceStatus(deviceDataMap);
+}, { deep: true })
+
 </script>
 
 <style lang="less" scoped>
@@ -378,6 +377,7 @@ onMounted(() => {
 
 .top-tool-bar {
     position: absolute;
+    margin-top: 20px;
     width: 100%;
     top: 0px;
     right: 0px;
