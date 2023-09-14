@@ -1,57 +1,44 @@
 <template>
-<div
-    ref="myPlayerDom"
-    :class="isFullScreen?'component-view full-screen':'component-view normal-screen'"
-    @dblclick="onToggleFullScreen" @mouseenter="()=>controllerVisible=true" @mouseleave="()=>controllerVisible=false"
-   >
+  <div ref="myPlayerDom" :class="isFullScreen ? 'component-view full-screen' : 'component-view normal-screen'"
+    @dblclick="onToggleFullScreen" @mouseenter="() => controllerVisible = true" @mouseleave="() => controllerVisible = false">
 
-<!--  <video  class="my-player" autoplay muted controls ref="videoElem">-->
-  <video  class="my-player" autoplay muted ref="videoElem">
-  </video>
-  <div class="header-bar" >
-    <div class="title">
-      <span>{{option.deviceName}}</span>
+    <!--  <video  class="my-player" autoplay muted controls ref="videoElem">-->
+    <video class="my-player" autoplay muted ref="videoElem">
+    </video>
+    <div class="header-bar">
+      <div class="title">
+        <span>{{ option.deviceName }}</span>
+      </div>
+      <div @click="onToggleFullScreen"
+        :class="isFullScreen ? 'full-screen-btn icon-my-fullscreen-cancel' : 'full-screen-btn icon-my-fullscreen'">
+      </div>
     </div>
-    <div @click="onToggleFullScreen" :class="isFullScreen?'full-screen-btn icon-my-fullscreen-cancel':'full-screen-btn icon-my-fullscreen'">
-    </div>
+    <!--  <transition appear  enter-active-class="show-controller" leave-active-class="hide-controller">-->
+    <VueDragResize v-show="controllerVisible" content-class="drag-class" :x="control.x" :y="control.y" :h="control.height"
+      :w="control.width" :key="control.key" :parent-h="control.parentHeight" :parent-w="control.parentWidth"
+      :isActive="true" :isDraggable="true" :parentLimitation="true" :isResizable="false">
+      <cctv-controller :deviceId="option.deviceId" />
+    </VueDragResize>
+    <!--  </transition>-->
+    <!--  <div class="controller" style="position: absolute;top:0;left:0;width: 100px;height: 100px">-->
+    <!--    -->
+    <!--  </div>-->
   </div>
-<!--  <transition appear  enter-active-class="show-controller" leave-active-class="hide-controller">-->
-  <VueDragResize
-      v-show="controllerVisible"
-      content-class="drag-class"
-      :x="control.x"
-      :y="control.y"
-      :h="control.height"
-      :w="control.width"
-      :key="control.key"
-      :parent-h="control.parentHeight"
-      :parent-w="control.parentWidth"
-      :isActive="true"
-      :isDraggable="true"
-      :parentLimitation="true"
-      :isResizable="false">
-    <cctv-controller :deviceId="option.deviceId"/>
-  </VueDragResize>
-<!--  </transition>-->
-<!--  <div class="controller" style="position: absolute;top:0;left:0;width: 100px;height: 100px">-->
-<!--    -->
-<!--  </div>-->
-</div>
 </template>
 
 
 <script setup name="cctv-player">
-import {nextTick, onBeforeUnmount, onMounted, reactive, ref,watch, } from "vue";
- import {getCodecInfo,getRemoteSdp} from '@/api/cctv-api.js'
+import { nextTick, onBeforeUnmount, onMounted, reactive, ref, watch, } from "vue";
+import { getCodecInfo, getRemoteSdp } from '@/api/cctv-api.js'
 import CctvController from "./CctvController.vue"
 import VueDragResize from 'vue3-drag-resize';
 import elementResizeDetectorMaker from "element-resize-detector";
-import {uuid} from "../../utils/uuid";
+import { uuid } from "@/utils/uuid";
 
 const props = defineProps({
-  option:{
-    type:Object,
-    required:true,
+  option: {
+    type: Object,
+    required: true,
   },
 
 });
@@ -59,25 +46,25 @@ const controllerVisible = ref(false);
 const isFullScreen = ref(false);
 const videoElem = ref(null);
 const myPlayerDom = ref(null);
-const suuid=props.option.suuid;
+const suuid = props.option.suuid;
 const control = reactive({
-  height:120,
-  width:120,
-  x:120,
-  y:120,
-  key:uuid(),
-  parentHeight:120,
-  parentWidth:120,
+  height: 120,
+  width: 120,
+  x: 120,
+  y: 120,
+  key: uuid(),
+  parentHeight: 120,
+  parentWidth: 120,
 })
 
 defineExpose({
   suuid
 })
 
-function onToggleFullScreen(){
+function onToggleFullScreen() {
 
   isFullScreen.value = !isFullScreen.value
-  if(isFullScreen.value){
+  if (isFullScreen.value) {
     if (myPlayerDom.value.requestFullscreen) {
       myPlayerDom.value.requestFullscreen();
     } else if (element.webkitRequestFullScreen) {
@@ -88,7 +75,7 @@ function onToggleFullScreen(){
       // IE11
       myPlayerDom.value.msRequestFullscreen();
     }
-  }else {
+  } else {
     if (document.exitFullscreen) {
       document.exitFullscreen();
     } else if (document.webkitCancelFullScreen) {
@@ -103,14 +90,14 @@ function onToggleFullScreen(){
 }
 
 
-watch(()=>props.option.isPlay,(newV,oldV)=>{
+watch(() => props.option.isPlay, (newV, oldV) => {
   // console.log("oldV:",oldV,"newV:",newV)
-  swithPlay(newV,oldV);
+  swithPlay(newV, oldV);
 })
 
 //======================= 以下是PeerConnection处理 =========================================
-let stream =null;
-let pc =null;
+let stream = null;
+let pc = null;
 const config = {
   iceServers: [{
     urls: ["stun:stun.l.google.com:19302"]
@@ -125,19 +112,19 @@ async function handleNegotiationNeededEvent() {
 
 
 function fetchCodecInfo() {
-  getCodecInfo(suuid).then((resp) =>{
-    let data =[];
+  getCodecInfo(suuid).then((resp) => {
+    let data = [];
     try {
-       if(typeof resp.data == 'string'){
-         console.warn("codec is empty",data)
-       }else {
-         data = resp.data;
-       }
+      if (typeof resp.data == 'string') {
+        console.warn("codec is empty", data)
+      } else {
+        data = resp.data;
+      }
       // console.log(data);
     } catch (e) {
-      console.log("Exception:",e);
+      console.log("Exception:", e);
     } finally {
-      data.forEach((v)=>{
+      data.forEach((v) => {
         pc.addTransceiver(v.Type, {
           'direction': 'sendrecv'
         })
@@ -151,7 +138,7 @@ function fetchCodecInfo() {
 
 
 function fetchRemoteSdp() {
-  getRemoteSdp(suuid, pc.localDescription.sdp).then((resp) =>{
+  getRemoteSdp(suuid, pc.localDescription.sdp).then((resp) => {
     try {
       let data = resp.data;
       pc.setRemoteDescription(new RTCSessionDescription({
@@ -164,42 +151,42 @@ function fetchRemoteSdp() {
   });
 }
 
-function setupVideo(){
+function setupVideo() {
   stream = new MediaStream();
   pc = new RTCPeerConnection(config);
   pc.onnegotiationneeded = handleNegotiationNeededEvent;
   //当连接状态改变时打印日志
-  pc.oniceconnectionstatechange = e => console.log("webrtc",pc.iceConnectionState)
+  pc.oniceconnectionstatechange = e => console.log("webrtc", pc.iceConnectionState)
   //获取编码信息
   fetchCodecInfo();
-  pc.ontrack = function(event) {
-  stream.addTrack(event.track);
+  pc.ontrack = function (event) {
+    stream.addTrack(event.track);
 
-  videoElem.value.srcObject = stream;
-  console.log(suuid+": "+event.streams.length + ' track is delivered')
+    videoElem.value.srcObject = stream;
+    console.log(suuid + ": " + event.streams.length + ' track is delivered')
   }
 
 }
 
 
-function closeVideo(){
+function closeVideo() {
   console.log("close video")
-  if(pc){
+  if (pc) {
     console.log("a")
     pc.close();
   }
-  videoElem.value.srcObject=null
+  videoElem.value.srcObject = null
   stream = null;
   pc = null;
 }
-function swithPlay(newVal,oldVal){
-  if(newVal){
+function swithPlay(newVal, oldVal) {
+  if (newVal) {
     setupVideo();
-  }else{
+  } else {
     closeVideo();
   }
 }
-onMounted(()=> {
+onMounted(() => {
   if (props.option.isPlay) {
     setupVideo();
   }
@@ -212,8 +199,8 @@ onMounted(()=> {
 
     //初始控制器位置
     let rects = myPlayerDom.value.getBoundingClientRect();
-    control.x =rects.width - control.width * 1.5;
-    control.y =  rects.height - control.height * 1.5;
+    control.x = rects.width - control.width * 1.5;
+    control.y = rects.height - control.height * 1.5;
     control.parentWidth = rects.width;
     control.parentHeight = rects.height;
 
@@ -223,8 +210,8 @@ onMounted(()=> {
       let rects = myPlayerDom.value.getBoundingClientRect();
       // control.x =rects.width * control.x/control.parentWidth
       // control.y =  rects.height * control.y/control.parentHeight;
-      control.x =rects.width - control.width * 1.1;
-      control.y =  rects.height - control.height * 1.6;
+      control.x = rects.width - control.width * 1.1;
+      control.y = rects.height - control.height * 1.6;
       control.parentWidth = rects.width;
       control.parentHeight = rects.height;
       control.key = uuid();
@@ -233,7 +220,7 @@ onMounted(()=> {
 })
 
 
-onBeforeUnmount(()=>{
+onBeforeUnmount(() => {
   closeVideo()
 })
 
@@ -244,7 +231,8 @@ onBeforeUnmount(()=>{
 
 <style scoped lang="less">
 @import "@/assets/styles/k-icon.less";
-.full-screen{
+
+.full-screen {
   position: fixed;
   top: 0px;
   left: 0px;
@@ -252,7 +240,8 @@ onBeforeUnmount(()=>{
   height: 100%;
   z-index: 9999;
 }
-.normal-screen{
+
+.normal-screen {
   position: relative;
   position: center;
   width: 100%;
@@ -260,24 +249,27 @@ onBeforeUnmount(()=>{
   z-index: auto;
   //min-height: 150px;
 }
-.component-view{
+
+.component-view {
 
   //width: 100%;
   //height: 100%;
 
   background-color: #3e3e3e;
-  .my-player{
+
+  .my-player {
     position: relative;
     top: 0px;
     left: 0px;
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
     //background-image: url("@/assets/images/player-background.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
   }
-  .header-bar{
+
+  .header-bar {
     position: absolute;
     top: 0px;
     left: 0px;
@@ -288,35 +280,40 @@ onBeforeUnmount(()=>{
     justify-content: space-between;
     justify-items: center;
     align-items: center;
-    .title{
+
+    .title {
       margin-left: 10px;
       color: white;
     }
-    .full-screen-btn{
+
+    .full-screen-btn {
       display: none;
     }
   }
-  }
-  .header-bar:hover{
-    background-color: rgba(80, 79, 79, 0.7);
-    .full-screen-btn{
-      opacity: 0.7;
-      margin-right: 10px;
-      width: 30px;
-      height: 30px;
-      display: block;
-    }
-    .full-screen-btn:hover{
-      width: 32px;
-      height: 32px;
-      display: block;
-      //box-shadow: 2px 2px 5px 2px #314255;
-    }
+}
+
+.header-bar:hover {
+  background-color: rgba(80, 79, 79, 0.7);
+
+  .full-screen-btn {
+    opacity: 0.7;
+    margin-right: 10px;
+    width: 30px;
+    height: 30px;
+    display: block;
   }
 
-.drag-class{
-  &.vdr.active:before{
-    outline: none!important;
+  .full-screen-btn:hover {
+    width: 32px;
+    height: 32px;
+    display: block;
+    //box-shadow: 2px 2px 5px 2px #314255;
+  }
+}
+
+.drag-class {
+  &.vdr.active:before {
+    outline: none !important;
   }
 
 }
@@ -325,6 +322,7 @@ onBeforeUnmount(()=>{
   animation: zoomIn;
   animation-duration: .5s;
 }
+
 .hide-controller {
   animation: zoomOut;
   animation-duration: .5s;

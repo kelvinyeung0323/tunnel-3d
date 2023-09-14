@@ -15,7 +15,7 @@
     </div>
 </template>
 <script name="fence-dialog" setup>
-import { ref, defineEmits, computed, defineProps, getCurrentInstance, onMounted } from "vue";
+import { ref, defineEmits, computed, defineProps, getCurrentInstance, onMounted, watch } from "vue";
 import "./dialog.less"
 const { proxy } = getCurrentInstance();
 const emit = defineEmits(['command']);
@@ -23,6 +23,12 @@ const props = defineProps({
     data: Object,
 });
 
+
+// watch(() => props.data.status, () => {
+//     console.log("status", props.data.status);
+//     deviceStatus.value = props.data.status;
+//     sendCommand();
+// }, { immediate: true })
 
 const connStatusText = computed(() => {
     switch (props.data.connStatus) {
@@ -51,10 +57,16 @@ const deviceStatus = ref("");
 const modelName = ref("");
 
 function handleChange() {
-    emit('command', { type: 'fence', modelName: modelName.value, cmd: 'switch', param: deviceStatus.value ? "opened" : "closed" })
+    sendCommand()
 }
+function sendCommand() {
+    emit('command', { type: 'fence', modelName: modelName.value, cmd: 'switch', param: deviceStatus.value ? "opened" : "closed" });
+}
+
+
 onMounted(() => {
     modelName.value = proxy.$el.dataset.modelName;
 })
+
 
 </script>

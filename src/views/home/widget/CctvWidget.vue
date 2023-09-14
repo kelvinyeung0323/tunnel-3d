@@ -1,17 +1,17 @@
 <template>
   <div class="widget">
-    <CctvPlayer :option="option"/>
+    <CctvPlayer :option="option" />
   </div>
 </template>
 <script name="cctv-widget" setup>
-import CctvPlayer from '@/components/cctv/CctvPlayer.vue'
-import {reactive } from 'vue'
+import CctvPlayer from '@/views/cctv/CctvPlayer.vue'
+import { reactive } from 'vue'
 
-const option =reactive({
-  suuid:"1",
-  isPlay:false,
-  deviceId:1,
-  deviceName:"名称",
+const option = reactive({
+  suuid: "1",
+  isPlay: false,
+  deviceId: "1",
+  deviceName: "名称",
 })
 
 </script>
@@ -19,7 +19,7 @@ const option =reactive({
 
 <style lang="less" scoped>
 .widget {
-  padding: 20px;
+  padding: 8px;
   background-color: rgba(0, 0, 0, .3);
   border-radius: 15px;
   width: 300px;

@@ -1,21 +1,13 @@
 <template>
   <div class='app-container'>
     <el-form :model='queryParams' ref='queryForm' :inline='true' v-show='showSearch' label-width='90px'>
-      <el-form-item label='设备类型' prop='equipmentType'>
-        <el-select v-model='queryParams.equipmentType'>
-          <el-option v-for='type in equipmentTypeEnum'
-                     :key='type.code'
-                     :value='type.code'
-                     :label='type.desc'></el-option>
+      <el-form-item label='设备类型' prop='deviceType'>
+        <el-select v-model='queryParams.deviceType'>
+          <el-option v-for='type in deviceTypeEnums' :key='type.code' :value='type.code' :label='type.name'></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label='设备名称' prop='equipmentName'>
-        <el-input
-          v-model='queryParams.equipmentName'
-          placeholder='请输入设备名称'
-          clearable
-          @keyup.enter.native='handleQuery'
-        />
+      <el-form-item label='设备名称' prop='deviceName'>
+        <el-input v-model='queryParams.deviceName' placeholder='请输入设备名称' clearable @keyup.enter.native='handleQuery' />
       </el-form-item>
 
       <el-form-item>
@@ -26,36 +18,15 @@
 
     <el-row :gutter='10' class='mb8'>
       <el-col :span='1.5'>
-        <el-button
-          type='primary'
-          plain
-          :icon='Plus'
-          @click='handleAdd'
-          v-hasPermi="['suidao:equipment:add']"
-        >新增
+        <el-button type='primary' :icon='Plus' @click='handleAdd'>新增
         </el-button>
       </el-col>
       <el-col :span='1.5'>
-        <el-button
-          type='success'
-          plain
-          :icon='Edit'
-          :disabled='single'
-          @click='handleUpdate'
-          v-hasPermi="['suidao:equipment:edit']"
-        >修改
+        <el-button type='success' :icon='Edit' :disabled='single' @click='handleUpdate'>修改
         </el-button>
       </el-col>
       <el-col :span='1.5'>
-        <el-button
-          type='danger'
-          plain
-          icon='el-icon-delete'
-          size='small'
-          :disabled='multiple'
-          @click='handleDelete'
-          v-hasPermi="['suidao:equipment:remove']"
-        >删除
+        <el-button type='danger' :icon='DeleteIcon' :disabled='multiple' @click='handleDelete'>删除
         </el-button>
       </el-col>
       <!--      <el-col :span="1.5">-->
@@ -65,106 +36,72 @@
       <!--            icon="el-icon-download"-->
       <!--            size="small"-->
       <!--            @click="handleExport"-->
-      <!--            v-hasPermi="['suidao:equipment:export']"-->
+      <!--            v-hasPermi="['suidao:device:export']"-->
       <!--        >导出-->
       <!--        </el-button>-->
       <!--      </el-col>-->
-      <right-toolbar v-model:showSearch='showSearch' @queryTable='getList'></right-toolbar>
+      <!-- <right-toolbar v-model:showSearch='showSearch' @queryTable='getList'></right-toolbar> -->
     </el-row>
 
-    <el-table v-loading='loading' :data='equipmentList' @selection-change='handleSelectionChange' class='table-class'>
+    <el-table v-loading='loading' :data='deviceList' @selection-change='handleSelectionChange' class='table-class'>
       <el-table-column type='selection' width='55' align='center' />
       <el-table-column type='index' label='序号' width='55' align='center' />
-      <el-table-column label='设备名称' align='center' prop='equipmentName' />
+      <el-table-column label='设备名称' align='center' prop='deviceName' />
       <el-table-column label='设备ip' align='center' prop='ip' />
       <el-table-column label='设备端口' align='center' prop='port' />
-      <el-table-column label='设备类型' align='center' prop='equipmentType'>
+      <el-table-column label='设备类型' align='center' prop='type'>
         <template #default='scope'>
-          <span>{{ equipmentTypesMap[scope.row.equipmentType] }}</span>
+          <span>{{ deviceTypeEnums[scope.row.type].name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label='设备状态' align='center' prop='equipmentStatus'>
+      <el-table-column label='设备状态' align='center' prop='connStatus'>
         <template #default='scope'>
-          <el-tag v-if='scope.row.equipmentStatus' :type='getStatusTagType(scope.row.equipmentStatus)'>
-            {{ scope.row.equipmentStatusLabel }}
+          <el-tag v-if='scope.row.connStatus' :type='getStatusTagType(scope.row.connStatus)'>
+            {{ deviceConnStatusEnums[scope.row.connStatus].name }}
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column label='网络串流' align='center' prop='rtsp' />
-      <el-table-column label='设备描述' align='center' prop='equipmentDesc' />
-      <el-table-column label='设备地址' align='center' prop='address' />
-      <el-table-column label='设备故障描述' align='center' prop='extension1' />
+      <el-table-column label='设备描述' align='center' prop='description' />
+      <el-table-column label='设备地址' align='center' prop='setupAddr' />
+      <el-table-column label='设备故障描述' align='center' prop='faultCause' />
       <!--      <el-table-column label="是否预警 1是 0否" align="center" prop=""-->
       <el-table-column label='关联预警设备' align='center' prop='extension2'>
         <template #default='scope'>
-          <el-tag type='info' v-for="id in scope.row.extension2?.split(',')?.filter(e=>e !='')" style='margin:2px'>
-            {{ allEquipmentIdMap[id] }}
+          <el-tag type='info' v-for="id in scope.row.extension2?.split(',')?.filter(e => e != '')" style='margin:2px'>
+            {{ allDeviceIdMap[id] }}
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column label='操作' align='center' class-name='small-padding fixed-width'>
         <template #default='scope'>
-          <el-button
-            size='small'
-            type='text'
-            icon='el-icon-edit'
-            @click='handleUpdate(scope.row)'
-            v-hasPermi="['suidao:equipment:edit']"
-          >修改
+          <el-button size='small' type='primary' :icon='Edit' @click='handleUpdate(scope.row)'>修改
           </el-button>
-          <el-button
-            size='small'
-            type='text'
-            icon='el-icon-delete'
-            @click='handleDelete(scope.row)'
-            v-hasPermi="['suidao:equipment:remove']"
-          >删除
+          <el-button size='small' type='danger' :icon='DeleteIcon' @click='handleDelete(scope.row)'>删除
           </el-button>
-          <el-button
-            v-if="scope.row.equipmentType == '2' && scope.row.linkStatus == 0"
-            size='small'
-            type='text'
-            icon='el-icon-delete'
-            @click="handleCommand('开启',scope.row.id)"
-
-          >开启自动联动
+          <el-button v-if="scope.row.deviceType == '2' && scope.row.linkStatus == 0" size='small' type='text'
+            icon='el-icon-delete' @click="handleCommand('开启', scope.row.id)">开启自动联动
           </el-button>
-          <el-button
-            v-if="scope.row.equipmentType == '2' && scope.row.linkStatus == 1"
-            size='small'
-            type='text'
-            icon='el-icon-delete'
-            @click="handleCommand('关闭',scope.row.id)"
-
-          >关闭自动联动
+          <el-button v-if="scope.row.deviceType == '2' && scope.row.linkStatus == 1" size='small' type='text'
+            icon='el-icon-delete' @click="handleCommand('关闭', scope.row.id)">关闭自动联动
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-
-    <pagination
-      v-show='total>0'
-      :total='total'
-      v-model:page='queryParams.pageNum'
-      v-model:limit='queryParams.pageSize'
-      @pagination='getList'
-    />
-
+    <el-pagination class="pagination" v-show="total > 0" small background layout="->,prev, pager, next"
+      @current-change="getList" :current-page="queryParams.pageNum" :page-size="queryParams.pageSize" :total="total" />
     <!-- 添加或修改设备管理对话框 -->
     <el-dialog :title='title' v-model='open' width='500px' append-to-body @close='cancel'>
       <el-form ref='formDom' :model='form' :rules='rules' label-width='80px'>
-        <el-form-item label='设备类型' prop='equipmentType'>
-          <el-select v-model='form.equipmentType' placeholder='请输入设备类型'>
-            <el-option v-for='type in equipmentTypeEnum'
-                       :key='type.code'
-                       :value='type.code'
-                       :label='type.desc'></el-option>
+        <el-form-item label='设备类型' prop='deviceType'>
+          <el-select v-model='form.deviceType' placeholder='请输入设备类型'>
+            <el-option v-for='type in deviceTypeEnum' :key='type.code' :value='type.code' :label='type.desc'></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label='设备名称' prop='equipmentName'>
-          <el-input v-model='form.equipmentName' placeholder='请输入设备名称' />
+        <el-form-item label='设备名称' prop='deviceName'>
+          <el-input v-model='form.deviceName' placeholder='请输入设备名称' />
         </el-form-item>
-        <el-form-item label='音量' prop='extension5' v-if='form.equipmentType ==equipmentTypeEnum.ALARM.code'>
+        <el-form-item label='音量' prop='extension5' v-if='form.deviceType == deviceTypeEnum.ALARM.code'>
           <el-slider v-model='form.extension5' :min='1' :max='30' show-input />
         </el-form-item>
         <el-form-item label='设备ip' prop='ip'>
@@ -176,8 +113,8 @@
         <el-form-item label='网络串流' prop='rtsp'>
           <el-input v-model='form.rtsp' placeholder='请输入网络串流' />
         </el-form-item>
-        <el-form-item label='设备描述' prop='equipmentDesc'>
-          <el-input v-model='form.equipmentDesc' placeholder='请输入设备描述' />
+        <el-form-item label='设备描述' prop='deviceDesc'>
+          <el-input v-model='form.deviceDesc' placeholder='请输入设备描述' />
         </el-form-item>
         <el-form-item label='设备地址' prop='address'>
           <el-input v-model='form.address' placeholder='请输入设备地址' />
@@ -186,21 +123,10 @@
         <!--          <el-input v-model="form.extension1" placeholder="请输入设备故障描述" />-->
         <!--        </el-form-item>-->
         <el-form-item label='关联预警设备' prop='extension2'>
-          <el-select
-            v-model='form.extension2'
-            multiple
-            filterable
-            placeholder='请选择关联预警设备'
-            style='width: 320px'
-          >
-            <el-option
-              v-for='item in allEquipments'
-              :key='item.id'
-              :label='item.equipmentName'
-              :value='item.id'
-            >
+          <el-select v-model='form.extension2' multiple filterable placeholder='请选择关联预警设备' style='width: 320px'>
+            <el-option v-for='item in allDevices' :key='item.id' :label='item.deviceName' :value='item.id'>
               <div style='min-width: 250px'>
-                <span style='float: left'>{{ item.equipmentName }}</span>
+                <span style='float: left'>{{ item.deviceName }}</span>
                 <span style='float: right;color: var(--el-text-color-secondary); font-size: 13px;'>{{ item.ip }}</span>
               </div>
             </el-option>
@@ -217,17 +143,18 @@
 
 <script setup>
 
-import useEquipmentStore from '@/store/modules/equipment'
+import { useDeviceStore } from '@/store/device-store'
 import { computed, ref, reactive, onMounted, getCurrentInstance } from 'vue'
-import { Plus, Delete, Edit, Search, Share, Upload, Refresh } from '@element-plus/icons-vue'
-// import { updataLinkStatus } from '@/api/device-api'
-const  {proxy} = getCurrentInstance();
-const equipmentStore = useEquipmentStore()
+import { Plus, Delete, Edit, Search, Share, Upload, Refresh, Delete as DeleteIcon } from '@element-plus/icons-vue'
+import { listDevices } from '@/api/device-api'
+import { deviceTypeEnums, deviceConnStatusEnums } from "@/utils/enums";
+const { proxy } = getCurrentInstance();
+const deviceStore = useDeviceStore()
 
 
-const equipmentTypeEnum = ref(null)
+const deviceTypeEnum = ref(null)
 // 遮罩层
-const loading = ref(true)
+const loading = ref(false)
 // 选中数组
 const ids = ref([])
 // 非单个禁用
@@ -239,7 +166,7 @@ const showSearch = ref(true)
 // 总条数
 const total = ref(0)
 // 设备管理表格数据
-const equipmentList = ref([])
+const deviceList = ref([])
 // 弹出层标题
 const title = ref('')
 // 是否显示弹出层
@@ -249,13 +176,13 @@ const queryParams = reactive({
   pageNum: 1,
   pageSize: 10,
   uid: null,
-  equipmentName: null,
+  deviceName: null,
   ip: null,
   port: null,
-  equipmentType: null,
-  equipmentStatus: null,
+  deviceType: null,
+  deviceStatus: null,
   rtsp: null,
-  equipmentDesc: null,
+  deviceDesc: null,
   address: null,
   extension1: null,
   extension2: null,
@@ -267,10 +194,10 @@ const queryParams = reactive({
 const form = ref({})
 // 表单校验
 const rules = reactive({
-  equipmentName: [
+  deviceName: [
     { required: true, message: '设备名称不能为空', trigger: 'blur' }
   ],
-  equipmentType: [
+  deviceType: [
     { required: true, message: '设备类型不能为空', trigger: 'blur' }
   ]
 })
@@ -282,9 +209,9 @@ function getStatusTagType(status) {
   //     ("2", "故障"),
   //     ("3", "未启用");
   switch (status) {
-    case '1':
-      return 'primary'
-    case '2':
+    case 'online':
+      return 'success'
+    case 'offline':
       return 'warning'
     case '3':
       return 'info'
@@ -299,9 +226,10 @@ function getList() {
   let { ...params } = queryParams;
   params.extension2 = queryParams.extension2?.join(',')
   listDevices(params).then(response => {
-    equipmentList.value = response.rows
+    console.log("response:", response)
+    deviceList.value = response.data
     total.value = response.total
-    loading.vaue = false
+    loading.value = false
   })
 }
 // 取消按钮
@@ -314,13 +242,13 @@ function reset() {
   form.value = {
     id: null,
     uid: null,
-    equipmentName: null,
+    deviceName: null,
     ip: null,
     port: null,
-    equipmentType: null,
-    equipmentStatus: '0',
+    deviceType: null,
+    deviceStatus: '0',
     rtsp: null,
-    equipmentDesc: null,
+    deviceDesc: null,
     address: null,
     createTime: null,
     createBy: null,
@@ -395,7 +323,7 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const ids = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除设备管理编号为"' + ids + '"的数据项？').then(function() {
+  proxy.$modal.confirm('是否确认删除设备管理编号为"' + ids + '"的数据项？').then(function () {
     return delDevice(ids)
   }).then(() => {
     getList()
@@ -405,14 +333,14 @@ function handleDelete(row) {
 }
 /** 导出按钮操作 */
 function handleExport() {
-  download('suidao/equipment/export', {
-    ...queryParams
-  }, `device_${new Date().getTime()}.xlsx`)
+  // download('suidao/device/export', {
+  //   ...queryParams
+  // }, `device_${new Date().getTime()}.xlsx`)
 }
-function handleCommand(cmd, equipmentId) {
+function handleCommand(cmd, deviceId) {
 
   // proxy.$modal.loading('命令发送中...')
-  // updataLinkStatus(equipmentId, cmd).then(res => {
+  // updataLinkStatus(deviceId, cmd).then(res => {
   //   console.log('command response', res)
   //   if (res.code == 200) {
   //     console.log('命令发送成功', res)
@@ -432,24 +360,28 @@ function handleCommand(cmd, equipmentId) {
 
 
 onMounted(() => {
-  equipmentStore.refreshAllEquipments();
+  deviceStore.refreshAllDevices();
   getList();
 })
-const allEquipments = computed(() => {
-  return equipmentStore.allEquipments
+const allDevices = computed(() => {
+  return deviceStore.allDevices
 })
 
-const allEquipmentIdMap = computed(() => {
+const allDeviceIdMap = computed(() => {
   let map = {}
-  equipmentStore.allEquipments?.forEach(e => map[e.id] = e.equipmentName)
+  deviceStore.allDevices?.forEach(e => map[e.id] = e.devicesName)
   return map
 })
 
 
 </script>
 
-<style scoped lang='scss'>
-.table-class {
+<style scoped lang="less">
+.table-class {}
 
+.app-container {
+  background-color: white;
+  height: 70vh;
+  padding: 0px;
 }
 </style>

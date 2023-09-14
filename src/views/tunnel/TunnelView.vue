@@ -142,7 +142,8 @@ function initScene() {
     axesHelper = new THREE.AxesHelper(5)
     //渲染器
     renderer = new THREE.WebGLRenderer();//设置背景色
-    renderer.setClearColor(0x2d3780, 1.0);
+    renderer.setClearColor(0x2d3780, 0);
+
     renderer.setPixelRatio(window.devicePixelRatio);
 
     scene.add(axesHelper);
@@ -368,8 +369,8 @@ onMounted(() => {
 <style lang="less" scoped>
 .tunnel-view {
     width: 100%;
-    height: 89.9vh;
-    background-color: aqua;
+    // height: 89.9vh;
+    height: 92vh;
     position: relative;
     top: 0px;
     right: 0px;

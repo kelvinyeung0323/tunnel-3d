@@ -5,29 +5,20 @@
     </el-row>
     <el-row :gutter="0" class="cctv-box">
       <el-col class="cctv-item" :span="8" v-for="v in data.cctvList" :key="v.no">
-        <my-player  :option="v" />
+        <cctv-player :option="v" />
       </el-col>
     </el-row>
-    <vue-drag-resize
-        :parentLimitation="true"
-        :parentW="pageWidth"
-        :parentH="pageHeight"
-        :y="0"
-        :x="0"
-        :h="isCCtvToolVisible?0:0"
-        :w="220"
-        :isActive="true"
-        :isDraggable="true"
-        :isResizable="false">
+    <vue-drag-resize :parentLimitation="true" :parentW="pageWidth" :parentH="pageHeight" :y="0" :x="0"
+      :h="isCCtvToolVisible ? 0 : 0" :w="220" :isActive="true" :isDraggable="true" :isResizable="false">
       <div class="element-box">
         <div class="title">
           <span>设备栏</span>
-          <div class="btn" @click="()=>{isCCtvToolVisible= !isCCtvToolVisible}">
+          <div class="btn" @click="() => { isCCtvToolVisible = !isCCtvToolVisible }">
             <el-icon>
-              <CaretTop v-if="isCCtvToolVisible"/>
-              <CaretBottom v-else/>
+              <CaretTop v-if="isCCtvToolVisible" />
+              <CaretBottom v-else />
             </el-icon>
-<!--            <i :class="isCCtvToolVisible?'el-icon-caret-top':'el-icon-caret-bottom'"/>-->
+            <!--            <i :class="isCCtvToolVisible?'el-icon-caret-top':'el-icon-caret-bottom'"/>-->
           </div>
         </div>
         <div class="content" v-if="isCCtvToolVisible">
@@ -37,7 +28,9 @@
           </div>
           <el-checkbox-group v-model="checkedList" @change="handleCheckedDevicesChange">
             <div v-for="cctv in data.cctvList" :key="cctv.no">
-              <el-checkbox  :label="cctv.no" @change="(checked)=>handleCheckChange(checked,cctv.no)">{{ cctv.equipmentName }}</el-checkbox>
+              <el-checkbox :label="cctv.no" @change="(checked) => handleCheckChange(checked, cctv.no)">{{
+                cctv.deviceName
+              }}</el-checkbox>
             </div>
 
           </el-checkbox-group>
@@ -48,14 +41,14 @@
 </template>
 
 <script setup name="cctv-mgt">
-import MyPlayer from "@/views/cctv/my-player";
-import VueDragResize from 'vue-drag-resize';
+import CctvPlayer from "@/views/cctv/CctvPlayer.vue";
+import VueDragResize from 'vue3-drag-resize';
 import elementResizeDetectorMaker from "element-resize-detector";
-import {onMounted, ref, nextTick, reactive, computed} from "vue";
-import {toRefs} from "@vueuse/core";
-import {listEquipment} from "@/api/tunnel/equipment.js"
-import {equipmentTypes} from "@/utils/tunnel-enums.js"
-
+import { onMounted, ref, nextTick, reactive, computed } from "vue";
+import { toRefs } from "@vueuse/core";
+import { listDevices } from "@/api/device-api.js"
+import { deviceTypeEnums } from "@/utils/enums.js"
+import { CaretTop, CaretBottom } from '@element-plus/icons-vue'
 const pageViewDom = ref(null);
 const cctvCheckBoxDom = ref([]);
 onMounted(() => {
@@ -78,8 +71,8 @@ onMounted(() => {
 const isCCtvToolVisible = ref(true);
 const pageWidth = ref(0);
 const pageHeight = ref(0);
-const data= reactive({
-  cctvList:[]
+const data = reactive({
+  cctvList: []
 })
 
 
@@ -89,7 +82,7 @@ const isIndeterminate = ref(true);
 
 
 function handleCheckAllChange(val) {
-  console.log("val",val)
+  console.log("val", val)
   checkedList.value = val ? data.cctvList.map(e => e.no) : [];
   isIndeterminate.value = false;
   handleCheckListChange();
@@ -102,75 +95,76 @@ function handleCheckedDevicesChange(value) {
   isIndeterminate.value = checkedCount > 0 && checkedCount < data.cctvList.length;
 }
 
-function handleCheckListChange(){
-  data.cctvList.forEach(c=>{
-    c.isPlay =  contains(checkedList.value,c.no)
+function handleCheckListChange() {
+  data.cctvList.forEach(c => {
+    c.isPlay = contains(checkedList.value, c.no)
     console.log(c.isPlay);
   })
   saveOpenedCCtv();
 }
 
-function contains(arr,key){
+function contains(arr, key) {
   for (let i = 0; i < arr.length; i++) {
-    if(arr[i] ==key){
+    if (arr[i] == key) {
       return true;
     }
   }
   return false;
 }
-function handleCheckChange(checked,cctv){
+function handleCheckChange(checked, cctv) {
 
 }
 
-//获取视图设备列表 equipmentType=8
-function getCctvList(){
-  listEquipment({equipmentType:equipmentTypes.CCTV.code}).then((res)=>{
-    console.log('resp',res)
-      let openedCctv = getOpenedCctv();
-      res.rows?.forEach((value,index)=>{
+//获取视图设备列表 deviceType=8
+function getCctvList() {
+  listDevices({ type: deviceTypeEnums.cctv.code }).then((res) => {
+    console.log('resp', res)
+    let openedCctv = getOpenedCctv();
+    res.data?.forEach((value, index) => {
 
-        let item={};
-        item.no = value.id;
-        item.equipmentName = value.equipmentName;
-        item.url = value.rtsp;
-        item.suuid = value.equipmentName;
-        item.isPlay=false;
-        //默认选前几个
-        if(index<2){
+      let item = {};
+      item.no = value.deviceId;
+      item.deviceId = value.deviceId;
+      item.deviceName = value.deviceName;
+      item.url = value.rtsp;
+      item.suuid = value.deviceId;  
+      item.isPlay = false;
+      //默认选前几个
+      if (index < 2) {
 
-        }
-        if(isExists(openedCctv,item.no)){
-          item.isPlay = true;
-          checkedList.value.push(item.no);
-        }
-        data.cctvList.push(item)
-      });
+      }
+      if (isExists(openedCctv, item.no)) {
+        item.isPlay = true;
+        checkedList.value.push(item.no);
+      }
+      data.cctvList.push(item)
+    });
 
 
 
   })
 }
-function isExists(arr,val){
+function isExists(arr, val) {
   for (let i = 0; i < arr.length; i++) {
-     if(parseInt(arr[i]) == val){
-       return true;
-     }
+    if (parseInt(arr[i]) == val) {
+      return true;
+    }
   }
   return false;
 }
-function getOpenedCctv(){
+function getOpenedCctv() {
   console.log("getOpenedCctv")
-  if(localStorage){
+  if (localStorage) {
     let arr = localStorage.getItem("cctv-default-open")?.split(",");
-    console.log("getOpenedCctv",arr)
-    return arr?arr:[]
+    console.log("getOpenedCctv", arr)
+    return arr ? arr : []
   }
 }
-function saveOpenedCCtv(){
+function saveOpenedCCtv() {
 
   let val = checkedList.value.join(",");
-  console.log("saveOpenedCCtv",checkedList,val)
-  localStorage.setItem("cctv-default-open",val);
+  console.log("saveOpenedCCtv", checkedList, val)
+  localStorage.setItem("cctv-default-open", val);
 }
 
 </script>
@@ -188,6 +182,7 @@ function saveOpenedCCtv(){
   align-content: flex-start;
   align-items: flex-start;
   justify-items: flex-start;
+
   //height: 400px;
   .cctv-item {
     //width: 200px;
@@ -247,13 +242,15 @@ function saveOpenedCCtv(){
     }
 
   }
+
   :deep(.el-checkbox__label) {
     display: inline-grid;
-    width:195px;
+    width: 195px;
     white-space: pre-line;
     word-wrap: break-word;
     line-height: 20px;
   }
+
   .el-button {
     margin: 5px;
   }

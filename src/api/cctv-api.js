@@ -1,10 +1,9 @@
+import axios from "@/utils/http";
 
-import axios from '@/utils/http';
-
-export function getCodecInfo(suuid){
-  axios.get("/cctv/codec/"+suuid)
+export function getCodecInfo(suuid) {
+  return axios.get("/api/cctv/codec/" + suuid);
 }
 
-export function getRemoteSdp(suuid, sdp){
-  axios.get("/cctv/sdp/"+suuid)
+export function getRemoteSdp(suuid, sdp) {
+  return axios.get("/api/cctv/sdp/" + suuid);
 }
